@@ -1,0 +1,19 @@
+FROM apache/airflow:3.1.2
+
+# Install Python dependencies from the pinned requirements file (if present).
+USER root
+COPY requirements.txt /tmp/requirements.txt
+RUN if [ -f /tmp/requirements.txt ]; then \
+      pip install --no-cache-dir -r /tmp/requirements.txt || true; \
+    fi
+
+# Copy DAGs and plugins into the image so the image is self-contained for deployment.
+# These directories are still mounted by docker-compose in development for easy iteration.
+COPY dags/ /opt/airflow/dags/
+COPY plugins/ /opt/airflow/plugins/
+
+RUN chown -R airflow: /opt/airflow/dags /opt/airflow/plugins || true
+
+USER airflow
+
+# The official image's entrypoint and default command are preserved.

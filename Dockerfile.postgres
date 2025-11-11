@@ -1,0 +1,8 @@
+FROM timescale/timescaledb:latest-pg15
+
+# Add initialization scripts to create the TimescaleDB extension in the target DB.
+# Any *.sql or *.sh files put in /docker-entrypoint-initdb.d/ will be executed
+# by the Postgres image during the first container startup (when the DB is initialized).
+COPY docker-entrypoint-initdb.d/ /docker-entrypoint-initdb.d/
+
+VOLUME ["/var/lib/postgresql/data"]
